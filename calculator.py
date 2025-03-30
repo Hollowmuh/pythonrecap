@@ -1,71 +1,79 @@
 class AdvancedCalculator:
     def __init__(self):
-        self.result = None;
+        self.result = None
     
     def add(self, a, b):
-        return a + b;
+        return a + b
 
     def subtract(self, a, b):
-        return a + b;
+        return a - b  # Fixed subtraction
 
     def multiply(self, a, b):
-        return str(a) * b;
+        return a * b  # Fixed multiplication
 
     def divide(self, a, b):
         if b == 0:
-            return "Error: Division by zero is not allowed.";
+            return "Error: Division by zero is not allowed."
         else:
-            return a/b;
+            return a / b
 
     def power(self, a, b):
-        return a ** b;
+        return a ** b
 
     def calculate(self, operation, x, y):
-        if operation == "add":
-            return self.add(x, y);
-        elif operation == "subtract":
-            return self.subtract(x, y);
-        elif operation == "multiply":
-            return self.multiply(x, y);
-        elif operation == "divide":
-            return self.divide(x, y);
-        elif operation == "power":
-            return self.power(x, y);
+        # Mapping operation names to methods for clarity
+        operations = {
+            "add": self.add,
+            "subtract": self.subtract,
+            "multiply": self.multiply,
+            "divide": self.divide,
+            "power": self.power
+        }
+        func = operations.get(operation)
+        if func:
+            return func(x, y)
+        else:
+            return "Invalid operation."
 
 
 def main():
     calc = AdvancedCalculator()
     while True:
         try:
-            userInput = input("Enter a number or operator (+, -, *, /, ^) or 'q' to exit: ")
-            if userInput.lower() == "q":
+            user_input = input("Enter a number or operator (+, -, *, /, ^) or 'q' to exit: ").strip()
+            if user_input.lower() == "q":
                 print("Exiting the calculator.")
                 break
-            if userInput in ["+", "-", "*", "/", "^"]:
+            # If input is an operator
+            if user_input in ["+", "-", "*", "/", "^"]:
                 if calc.result is None:
-                    print("No previous calculation, Please enter a number first.")
+                    print("No previous calculation. Please enter a number first.")
                     continue
-                num2 = input("Enter second number: ")
-                if not num2.replace('.', '', 1).isdigit():
-                    print("Invalid input. Please enter numbers only.")
+                num2_input = input("Enter second number: ").strip()
+                try:
+                    num2 = float(num2_input)
+                except ValueError:
+                    print("Invalid input. Please enter a valid number.")
                     continue
-                num2 = float(num2)
-                operations = {
+                operation_map = {
                     "+": 'add',
                     "-": 'subtract',
                     "*": 'multiply',
                     "/": 'divide',   
-                    "^": 'power'}
-                calc.result = calc.calculate(operations[userInput], calc.result, num2)
+                    "^": 'power'
+                }
+                calc.result = calc.calculate(operation_map[user_input], calc.result, num2)
                 print(f"Result: {calc.result}")
-            elif userInput.replace('.', '', 1).isdigit():
-                calc.result = float(userInput)
-                print(f"Current number: {calc.result}")
             else:
-                print("Invalid input. Please enter numbers or operators only.")
+                # Try converting to a float to handle numbers (including negatives)
+                try:
+                    calc.result = float(user_input)
+                    print(f"Current number: {calc.result}")
+                except ValueError:
+                    print("Invalid input. Please enter a number or a valid operator.")
         except Exception as e:
-            print(f"An error occurred: str{e}")
-            # calc.result = None
+            print(f"An error occurred: {e}")
+            calc.result = None
 
 if __name__ == "__main__":
     main()
